@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+<!-- specific plugin -->
+<script src="https://d3js.org/d3-contour.v1.min.js"></script>
+
+<script>
+    var file_name = '{{ file_name }}';
+</script>
+{% endblock %}
+
+{% block title %}
+Results Page
+{% endblock title %}
+
+{% block content %}
+
+{{ super() }}
+
+<!-- Create a div where the graph will take place -->
+<span id="data-vis"></span>
+<span id="spice-info"><h1 id="spice-header">{{ is_spice }}</h1></span>
+
+
+<script src="{{ url_for('static', filename='results.js') }}"></script>
+{% endblock content %}

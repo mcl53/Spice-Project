@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+500 error
+{% endblock title %}
+
+{% block content %}
+    <h1>An unexpected error has occurred (505 error)</h1>
+    <p>Sorry for the inconvenience!</p>
+    <a href="{{ url_for('home') }}" role="button" class="btn btn-outline-secondary btn-md">Back to home</a>
+{% endblock %}

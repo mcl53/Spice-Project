@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Home Page
+{% endblock title %}
+
+{% block content %} <!-- Creation of form -->
+    <form method="POST" action="" enctype="multipart/form-data">
+        {{ form.hidden_tag() }} <!-- Part of SECRET KEY -->
+        <fieldset class="form-group">
+            <legend class="mb-1 display-6">Spice Tester</legend>
+            <div class="form-group">
+                {{ form.file.label() }}
+                <div class="container">
+                    {{ form.file(class="form-control-label") }}
+                </div>
+                    {% if form.file.errors %}
+                    {% for error in form.file.errors %}
+                        <span class="text-danger">{{ error }}</span></br>
+                    {% endfor %}
+                {% endif %}
+        </fieldset>
+            <div class="form-group">
+                {{ form.submit(class="btn btn-outline-secondary btn-md") }} <!-- Submit button -->
+            </div>
+    </form>
+{% endblock content %}
+
+
+

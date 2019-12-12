@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block title %}
+404 error
+{% endblock title %}
+
+{% block content %}
+    <h2>Sorry! This file cannot be found. (404 error)</h1>
+    <a href="{{ url_for('home') }}" role="button" class="btn btn-outline-secondary btn-md">Back to home</a>
+{% endblock %}
