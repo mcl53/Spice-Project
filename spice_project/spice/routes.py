@@ -35,7 +35,7 @@ def home():
         filename = None
         fingerprint_data_csv = form.file.data
         save_file(fingerprint_data_csv)
-        flash('Successfully submited fingerprint data.', 'success')
+        flash('Successfully submitted fingerprint data.', 'success')
         return redirect(url_for('result', file_name=filename))
     return render_template('home.html', title='Home', form=form)
 
