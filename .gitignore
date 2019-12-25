@@ -3,3 +3,9 @@
 *.csv
 *.xml
 .DS_Store
+.idea/Spice-Project.iml
+*.xls
+*.xlsx
+spice_project/spice/data_processing/model.p
+spice_project/spice/data_processing/w_matrix.txt
+spice_project/spice/data_processing/zeros.txt

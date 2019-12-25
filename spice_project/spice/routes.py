@@ -4,6 +4,7 @@ from spice.forms import EnterData
 import os
 import pandas as pd
 from spice.results import generate_results, mean_and_sd
+from spice.data_processing.linear_discriminant_analysis import test_data_by_lda
 
 # Variables in global application context
 filepath = None
@@ -19,7 +20,6 @@ def save_file(fingerprint_data_csv):
     filepath = str(file_path)
     global filename
     filename = str(fingerprint_data_fn)
-    print(filepath, filename)
 
 
 '''App routes'''
@@ -44,8 +44,9 @@ def home():
 def result(file_name):
     global filepath
     results_data = generate_results(filepath)
-    is_spice = mean_and_sd(results_data)
-    if is_spice:
+    # is_spice_mean_sd = mean_and_sd(results_data)
+    is_spice_lda = test_data_by_lda(filepath)
+    if is_spice_lda:
         print("spicy boi")
         spice = "Spice"
     else:
