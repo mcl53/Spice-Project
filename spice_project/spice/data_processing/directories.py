@@ -1,11 +1,10 @@
-from spice.data_processing import read_write
-from spice import app
+from read_write import read_in_data
 import os
 import re
 
 # Variables for data locations
 
-data_root = os.path.join(app.root_path, "data")
+data_root = "../data"
 not_spice = "not_spice"
 spice = "spice"
 saliva = "saliva"
@@ -50,7 +49,7 @@ def read_data(strain=None, in_saliva=True):
 	
 	for path in paths:
 		count += 1
-		data = read_write.read_in_data(path)
+		data = read_in_data(path)
 		dataframes[count] = data
 	
 	return dataframes

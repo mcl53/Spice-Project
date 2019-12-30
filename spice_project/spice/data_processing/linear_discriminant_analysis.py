@@ -4,49 +4,66 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
-from spice.data_processing.directories import read_data
-from spice.data_processing.read_write import read_in_data
+from directories import read_data
+from read_write import read_in_data
 import pickle
 import os
-from spice import app
+from flask import current_app as app
 
 
-def create_new_lda_model():
+def create_new_lda_model(*acc_test_file_nums):
+	
 	strains = ["2bromo", "2chloro", "2fluoro", "2iodo", "5fadb", "5fpb22", "am679", "am694"]
 	
 	spice_data = {}
 	
-	i = 0
+	# i = 0
+	
+	len_spice = 0
+	len_non_spice = 0
 	
 	files = {}
 	
 	for strain in strains:
-		data = read_data(strain, False)
-		len1 = len(data)
-		for x in data.keys():
-			i += 1
-			spice_data[i] = data[x]
-		data = read_data(strain, True)
-		len2 = len(data)
-		files[strain] = len1 + len2
-		for x in data.keys():
-			i += 1
-			spice_data[i] = data[x]
-	
+		len_before = len(spice_data)
+		saliva_data = read_data(strain, True)
+		for key in saliva_data.keys():
+			spice_data[key + len_before] = saliva_data[key]
+		# for x in data.keys():
+		# 	i += 1
+		# 	spice_data[i] = data[x]
+		# len_saliva = len(spice_data)
+		non_saliva_data = read_data(strain, False)
+		for key in non_saliva_data.keys():
+			spice_data[key + len_before + len(saliva_data)] = non_saliva_data[key]
+		# len2 = len(data)
+		files[strain] = len(spice_data) - len_before
+		# for x in data.keys():
+		# 	i += 1
+		# 	spice_data[i] = data[x]
 	non_spice_data = read_data(in_saliva=True)
+	non_spice_non_saliva = read_data(in_saliva=False)
+	non_spice_data.update(non_spice_non_saliva)
 	files["not_spice"] = len(non_spice_data)
 	
-	all_values = []
+	# print(len(spice_data))
+	# print(len(non_spice_data))
+	# print(files)
 	
-	for i in spice_data.keys():
-		df = spice_data[i]
-		lst = df["z"]
-		all_values.append(lst)
+	all_values = list(x["z"] for x in spice_data.values())
+	all_values.extend(list(x["z"] for x in non_spice_data.values()))
 	
-	for i in non_spice_data.keys():
-		df = non_spice_data[i]
-		lst = df["z"]
-		all_values.append(lst)
+	# print(len(all_values))
+	
+	# for i in spice_data.keys():
+	# 	df = spice_data[i]
+	# 	lst = df["z"]
+	# 	all_values.append(lst)
+	#
+	# for i in non_spice_data.keys():
+	# 	df = non_spice_data[i]
+	# 	lst = df["z"]
+	# 	all_values.append(lst)
 	
 	classes = []
 	
@@ -58,6 +75,15 @@ def create_new_lda_model():
 		num = files[key]
 		for i in range(0, num):
 			classes.append(cat)
+	
+	# Removing certain pieces of data if doing a model accuracy test
+	
+	if acc_test_file_nums:
+		file_nums_to_exclude = [x for x in acc_test_file_nums]
+		file_nums_to_exclude.sort(reverse=True)
+		for i in file_nums_to_exclude:
+			del all_values[i]
+			del classes[i]
 	
 	# Removing all zero values from data to allow for matrix inversion below
 	zero_values = np.array([])
@@ -80,7 +106,6 @@ def create_new_lda_model():
 			max_length = len(i)
 	
 	X = pd.DataFrame(all_values)
-	y = pd.Categorical(classes)
 	
 	data_and_classes = X.copy()
 	data_and_classes.insert(max_length, "class", classes)
@@ -131,32 +156,27 @@ def create_new_lda_model():
 	np.savetxt("./zeros.txt", zero_values)
 	np.savetxt("./w_matrix.txt", w_matrix)
 	
-	# zero_values = np.pad(zero_values, (0, len(w_matrix) - len(zero_values)), mode='constant')
-	# w_matrix_and_indices = np.append([w_matrix], [zero_values], axis=0)
-	# w_matrix_and_indices = pd.DataFrame(w_matrix_and_indices, columns=["w_matrix", "zeros"])
-	# w_matrix_and_indices.to_csv("./w_matrix.csv", index=False)
-	
 	le = LabelEncoder()
 	
 	y = le.fit_transform(data_and_classes["class"])
 	
 	dt = DecisionTreeClassifier()
 	
-	X_train, X_test, y_train, y_test = train_test_split(X_lda, y, random_state=1)
+	# X_train, X_test, y_train, y_test = train_test_split(X_lda, y, random_state=1)
 	
-	dt.fit(X_train, y_train)
+	dt.fit(X_lda, y)
 	pickle.dump(dt, open("./model.p", "wb"))
-	y_pred = dt.predict(X_test)
-	print(confusion_matrix(y_test, y_pred))
+	# y_pred = dt.predict(X_test)
+	# print(confusion_matrix(y_test, y_pred))
 
 
 def test_data_by_lda(filepath):
 	
 	new_data = read_in_data(filepath)["z"]
 	
-	path_to_w_matrix = os.path.join(app.root_path, "data_processing/w_matrix.txt")
-	path_to_zeros = os.path.join(app.root_path, "data_processing/zeros.txt")
-	path_to_model = os.path.join(app.root_path, "data_processing/model.p")
+	path_to_w_matrix = "./w_matrix.txt"
+	path_to_zeros = "./zeros.txt"
+	path_to_model = "./model.p"
 	
 	w_matrix = np.loadtxt(path_to_w_matrix)
 	zeros = np.loadtxt(path_to_zeros)
@@ -176,7 +196,7 @@ def test_data_by_lda(filepath):
 
 
 if __name__ == "__main__":
-	create_new_lda_model()
+	# create_new_lda_model(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
 	
-	is_spice = test_data_by_lda("data/not_spice/saliva/saliva after cigar with exodus xyz.csv")
+	is_spice = test_data_by_lda("../data/not_spice/saliva/saliva after cigar with exodus xyz.csv")
 	print(is_spice)

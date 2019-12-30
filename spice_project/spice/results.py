@@ -1,5 +1,5 @@
-from spice.data_processing.read_write import read_in_data
-from spice.data_processing.directories import read_data
+from data_processing.read_write import read_in_data
+from data_processing.directories import read_data
 import numpy as np
 
 

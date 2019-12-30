@@ -1,20 +1,20 @@
-from flask import render_template, flash, url_for, redirect, request, send_file
-from spice import app
-from spice.forms import EnterData
+from flask import Flask, render_template, flash, url_for, redirect, send_file
+from forms import EnterData
 import os
-import pandas as pd
-from spice.results import generate_results, mean_and_sd
-from spice.data_processing.linear_discriminant_analysis import test_data_by_lda
+from results import generate_results, mean_and_sd
+from data_processing.linear_discriminant_analysis import test_data_by_lda
 
 # Variables in global application context
 filepath = None
 filename = None
 
+app = Flask(__name__, static_folder="." + os.path.sep + "static")
+app.config['SECRET_KEY'] = '64d9454d97e0a451b7b2352374dbd68f'
+
 
 def save_file(fingerprint_data_csv):
     fingerprint_data_fn = fingerprint_data_csv.filename
-    file_path = os.path.join(
-        app.root_path, 'Fingerprints', fingerprint_data_fn)
+    file_path = os.path.join("spice_project/spice/Fingerprints", fingerprint_data_fn)
     fingerprint_data_csv.save(file_path)
     global filepath
     filepath = str(file_path)
