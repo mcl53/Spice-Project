@@ -54,6 +54,47 @@ def read_data(strain=None, in_saliva=True):
 	
 	return dataframes
 
+
+def read_all_spice_data():
 	
-if __name__=="__main__":
-	df = read_data("5fpb22", False)
+	spice_data = {}
+	files = {}
+	i = 0
+	
+	for strain in strains:
+		len_before = len(spice_data)
+		data = read_data(strain, False)
+		for x in data.keys():
+			i += 1
+			spice_data[i] = data[x]["z"]
+		data = read_data(strain, True)
+		for x in data.keys():
+			i += 1
+			spice_data[i] = data[x]["z"]
+		files[strain] = len(spice_data) - len_before
+	
+	return spice_data, files
+
+
+def read_all_non_spice_data():
+	non_spice_data = read_data(in_saliva=True)
+	non_spice_non_saliva = read_data(in_saliva=False)
+	
+	length = len(non_spice_data)
+	
+	for i, data in enumerate(non_spice_non_saliva.values()):
+		non_spice_data[length + i + 1] = data
+	
+	for i in non_spice_data.keys():
+		non_spice_data[i] = non_spice_data[i]["z"]
+	
+	files = {"not_spice": len(non_spice_data)}
+		
+	return non_spice_data, files
+
+	
+if __name__ == "__main__":
+	# df = read_data("5fpb22", False)
+	data, files = read_all_non_spice_data()
+	print(len(data), len(files))
+	print(data)

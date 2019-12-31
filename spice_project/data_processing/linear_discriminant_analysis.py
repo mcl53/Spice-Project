@@ -4,7 +4,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
-from directories import read_data
+from directories import read_data, read_all_spice_data, read_all_non_spice_data
 from read_write import read_in_data
 import pickle
 import os
@@ -13,62 +13,18 @@ from flask import current_app as app
 
 def create_new_lda_model(*acc_test_file_nums):
 	
-	strains = ["2bromo", "2chloro", "2fluoro", "2iodo", "5fadb", "5fpb22", "am679", "am694"]
+	spice_data, files = read_all_spice_data()
+	non_spice_data, non_spice_files = read_all_non_spice_data()
 	
-	spice_data = {}
+	all_values = list(x for x in spice_data.values())
+	all_values.extend(list(x for x in non_spice_data.values()))
 	
-	# i = 0
-	
-	len_spice = 0
-	len_non_spice = 0
-	
-	files = {}
-	
-	for strain in strains:
-		len_before = len(spice_data)
-		saliva_data = read_data(strain, True)
-		for key in saliva_data.keys():
-			spice_data[key + len_before] = saliva_data[key]
-		# for x in data.keys():
-		# 	i += 1
-		# 	spice_data[i] = data[x]
-		# len_saliva = len(spice_data)
-		non_saliva_data = read_data(strain, False)
-		for key in non_saliva_data.keys():
-			spice_data[key + len_before + len(saliva_data)] = non_saliva_data[key]
-		# len2 = len(data)
-		files[strain] = len(spice_data) - len_before
-		# for x in data.keys():
-		# 	i += 1
-		# 	spice_data[i] = data[x]
-	non_spice_data = read_data(in_saliva=True)
-	non_spice_non_saliva = read_data(in_saliva=False)
-	non_spice_data.update(non_spice_non_saliva)
-	files["not_spice"] = len(non_spice_data)
-	
-	# print(len(spice_data))
-	# print(len(non_spice_data))
-	# print(files)
-	
-	all_values = list(x["z"] for x in spice_data.values())
-	all_values.extend(list(x["z"] for x in non_spice_data.values()))
-	
-	# print(len(all_values))
-	
-	# for i in spice_data.keys():
-	# 	df = spice_data[i]
-	# 	lst = df["z"]
-	# 	all_values.append(lst)
-	#
-	# for i in non_spice_data.keys():
-	# 	df = non_spice_data[i]
-	# 	lst = df["z"]
-	# 	all_values.append(lst)
+	files.update(non_spice_files)
 	
 	classes = []
 	
 	for key in files.keys():
-		if key in strains:
+		if key != "not_spice":
 			cat = "spice"
 		else:
 			cat = "not_spice"
@@ -86,6 +42,7 @@ def create_new_lda_model(*acc_test_file_nums):
 			del classes[i]
 	
 	# Removing all zero values from data to allow for matrix inversion below
+	
 	zero_values = np.array([])
 	for i in range(len(all_values)):
 		zeros = []
@@ -162,15 +119,11 @@ def create_new_lda_model(*acc_test_file_nums):
 	
 	dt = DecisionTreeClassifier()
 	
-	# X_train, X_test, y_train, y_test = train_test_split(X_lda, y, random_state=1)
-	
 	dt.fit(X_lda, y)
 	pickle.dump(dt, open("./model.p", "wb"))
-	# y_pred = dt.predict(X_test)
-	# print(confusion_matrix(y_test, y_pred))
 
 
-def test_data_by_lda(filepath):
+def predict_data_using_lda(filepath):
 	
 	new_data = read_in_data(filepath)["z"]
 	
@@ -196,7 +149,7 @@ def test_data_by_lda(filepath):
 
 
 if __name__ == "__main__":
-	# create_new_lda_model(3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17)
+	create_new_lda_model()
 	
-	is_spice = test_data_by_lda("../data/not_spice/saliva/saliva after cigar with exodus xyz.csv")
+	is_spice = predict_data_using_lda("../data/not_spice/saliva/saliva after cigar with exodus xyz.csv")
 	print(is_spice)

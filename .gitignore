@@ -10,3 +10,10 @@ spice_project/spice/data_processing/model.p
 spice_project/spice/data_processing/w_matrix.txt
 spice_project/spice/data_processing/zeros.txt
 venv/*
+*.p
+spice_project/data_processing/non_spice_means.txt
+spice_project/data_processing/non_spice_sds.txt
+spice_project/data_processing/spice_means.txt
+spice_project/data_processing/spice_sds.txt
+spice_project/data_processing/w_matrix.txt
+spice_project/data_processing/zeros.txt

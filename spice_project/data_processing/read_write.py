@@ -106,5 +106,5 @@ def convert_to_xyz(filepath):
 
 
 if __name__ == "__main__":
-	# read_example_data(path_to_examples)
-	convert_to_xyz("/Users/matt/Documents_(hard_drive)/repositories/Spice-Project/spice_project/spice/data/not_spice/non_saliva/Indazole_5_ug_4_point_5nm_500 cleaned3.csv")
+	
+	convert_to_xyz("../data/not_spice/non_saliva/Indazole_5_ug_4_point_5nm_500 cleaned3.csv")
