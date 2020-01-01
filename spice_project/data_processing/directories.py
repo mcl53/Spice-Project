@@ -1,4 +1,7 @@
-from read_write import read_in_data
+try:
+	from .read_write import read_in_data
+except ImportError:
+	from read_write import read_in_data
 import os
 import re
 
@@ -10,7 +13,7 @@ spice = "spice"
 saliva = "saliva"
 non_saliva = "non_saliva"
 examples = "examples"
-strains = ["2bromo", "2chloro", "2fluoro", "2iodo", "5fadb", "5fpb22", "am679", "am694"]
+strains = ["2bromo", "2chloro", "2fluoro", "2iodo", "5fadb", "5fpb22", "5fakb48", "ab_fubinaca", "am679", "am694"]
 
 
 def read_data(strain=None, in_saliva=True):

@@ -1,8 +1,9 @@
-from flask import Flask, render_template, flash, url_for, redirect, send_file
+from flask import Flask, render_template, flash, url_for, redirect, send_file, jsonify, app
 from forms import EnterData
 import os
-from results import generate_results, mean_and_sd
-from data_processing.linear_discriminant_analysis import test_data_by_lda
+from data_processing.mean_and_sd import predict_data_using_mean_and_sd
+from data_processing.linear_discriminant_analysis import predict_data_using_lda
+import json
 
 # Variables in global application context
 filepath = None
@@ -43,7 +44,7 @@ def home():
 @app.route("/result/<file_name>", methods=['GET', 'POST'])
 def result(file_name):
     global filepath
-    results_data = generate_results(filepath)
+    # results_data = generate_results(filepath)
     # is_spice_mean_sd = mean_and_sd(results_data)
     is_spice_lda = test_data_by_lda(filepath)
     if is_spice_lda:
@@ -70,3 +71,16 @@ def fingerprints(file_name):
     path_to_file = os.path.join(app.root_path, "Fingerprints", file_name)
     print(file_name)
     return send_file(path_to_file, attachment_filename=file_name)
+
+
+@app.route("/model_stats")
+def model_stats():
+    return render_template("model_stats.html")
+
+
+@app.route("/retrieve_model_stats", methods=["GET"])
+def retrieve_stats():
+    path_to_json = os.path.join(app.root_path, "data_processing/model_test_data.json")
+    with open(path_to_json, "r") as f:
+        j = json.load(f)
+        return jsonify(j)

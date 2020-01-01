@@ -1,11 +1,16 @@
+try:
+	from .directories import read_data, read_all_spice_data, read_all_non_spice_data
+	from .read_write import read_in_data
+except ImportError:
+	from directories import read_data, read_all_spice_data, read_all_non_spice_data
+	from read_write import read_in_data
+
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import confusion_matrix
-from directories import read_data, read_all_spice_data, read_all_non_spice_data
-from read_write import read_in_data
 import pickle
 import os
 from flask import current_app as app
@@ -63,6 +68,7 @@ def create_new_lda_model(*acc_test_file_nums):
 			max_length = len(i)
 	
 	X = pd.DataFrame(all_values)
+	y = pd.Categorical(classes)
 	
 	data_and_classes = X.copy()
 	data_and_classes.insert(max_length, "class", classes)
@@ -149,7 +155,7 @@ def predict_data_using_lda(filepath):
 
 
 if __name__ == "__main__":
-	create_new_lda_model()
+	# create_new_lda_model()
 	
 	is_spice = predict_data_using_lda("../data/not_spice/saliva/saliva after cigar with exodus xyz.csv")
 	print(is_spice)

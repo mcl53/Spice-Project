@@ -1,8 +1,13 @@
+try:
+    from .read_write import read_in_data
+    from .directories import read_all_spice_data, read_all_non_spice_data
+except:
+    from read_write import read_in_data
+    from directories import read_all_spice_data, read_all_non_spice_data
+
 import pandas as pd
 from sklearn import preprocessing
 from sklearn.decomposition import PCA
-from read_write import read_in_data
-from directories import read_all_spice_data, read_all_non_spice_data
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.preprocessing import LabelEncoder
 import pickle
@@ -28,6 +33,8 @@ def create_new_pca_model(*acc_test_file_nums):
         for i in range(0, num):
             classes.append(cat)
 
+    # Removing certain pieces of data if doing a model accuracy test
+    
     if acc_test_file_nums:
         file_nums_to_exclude = [x for x in acc_test_file_nums]
         file_nums_to_exclude.sort(reverse=True)
@@ -45,7 +52,7 @@ def create_new_pca_model(*acc_test_file_nums):
     X = pd.DataFrame(X_transform)
 
     data_and_classes = X.copy()
-    data_and_classes.insert(6, "class", classes)
+    data_and_classes.insert(X.shape[1], "class", classes)
 
     le = LabelEncoder()
     y = le.fit_transform(data_and_classes["class"])
@@ -74,5 +81,5 @@ def predict_data_using_pca(filepath):
 
 if __name__ == "__main__":
     create_new_pca_model()
-    is_spice = predict_data_using_pca("../data/spice/non_saliva/2bromo/2bromo degraded xyz data.csv")
+    is_spice = predict_data_using_pca("../data/spice/non_saliva/2chloro/2chloro xyz data.csv")
     print(is_spice)

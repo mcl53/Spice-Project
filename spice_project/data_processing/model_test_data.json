@@ -1,0 +1,1 @@
+"{\"mean_and_sd\": {\"model_time\": 11.166, \"pred_time\": 0.599, \"acc\": 64.286}, \"pca\": {\"model_time\": 0.629, \"pred_time\": 0.018, \"acc\": 64.286}, \"lda\": {\"model_time\": 1798.383, \"pred_time\": 9.086, \"acc\": 78.571}}"

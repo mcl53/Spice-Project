@@ -1,5 +1,9 @@
-from read_write import read_in_data
-from directories import read_data, read_all_spice_data, read_all_non_spice_data
+try:
+	from .read_write import read_in_data
+	from .directories import read_data, read_all_spice_data, read_all_non_spice_data
+except ImportError:
+	from read_write import read_in_data
+	from directories import read_data, read_all_spice_data, read_all_non_spice_data
 import numpy as np
 	
 	
@@ -12,14 +16,15 @@ def create_new_mean_and_sd_model(*acc_test_file_nums):
 	non_spice_values = list(x for x in non_spice_data.values())
 	
 	if acc_test_file_nums:
-		file_nums_to_exclude = [x for x in acc_test_file_nums]
+		file_nums_to_exclude = [x + 1 for x in acc_test_file_nums]
 		file_nums_to_exclude.sort(reverse=True)
+		spice_length = len(spice_data)
 		for i in file_nums_to_exclude:
 			
 			"""Data is stored in separate variables for spice and non spice data, so treating spice data as
 			0 to len(spice_data) and non spice data as len(spice_data) + 1 to end"""
 			
-			if i < len(spice_data):
+			if i <= spice_length:
 				del spice_data[i]
 			else:
 				del non_spice_data[i - len(spice_data)]
@@ -80,13 +85,12 @@ def predict_data_using_mean_and_sd(filepath):
 			non_spice_total += non_spice_add
 			
 		x += 1
-		
-	print(non_spice_total, spice_total)
+	
 	is_spice = non_spice_total > spice_total
 	return is_spice
 
 
 if __name__ == "__main__":
-	create_new_mean_and_sd_model()
-	is_spice = predict_data_using_mean_and_sd("../data/spice/non_saliva/2bromo/2bromo degraded xyz data.csv")
+	# create_new_mean_and_sd_model()
+	is_spice = predict_data_using_mean_and_sd("../data/not_spice/saliva/saliva after cigar with extinction xyz.csv")
 	print(is_spice)

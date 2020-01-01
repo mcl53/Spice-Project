@@ -4,7 +4,6 @@ import re
 import numpy as np
 
 path_to_examples = "data/spice/examples"
-strains = ["5fadb", "am679", "am694"]
 
 
 def read_in_data(filepath):

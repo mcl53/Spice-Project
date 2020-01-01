@@ -1,0 +1,42 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Model Statistics
+{% endblock title %}
+
+{% block content %}
+<div class="table-responsive">
+    <table id="results-table" class="table table-striped table-bordered">
+        <thead class="thead-dark">
+            <tr>
+                <th>Classification Method</th>
+                <th>Ave. Model Generation Time</th>
+                <th>Ave. Result Generation Time</th>
+                <th>Accuracy</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="mean-sd">
+                <td>Mean and SD</td>
+                <td id="mean-sd-model-time"></td>
+                <td id="mean-sd-result-time"></td>
+                <td id="mean-sd-acc"></td>
+            </tr>
+            <tr class="pca">
+                <td>PCA</td>
+                <td id="pca-model-time"></td>
+                <td id="pca-result-time"></td>
+                <td id="pca-acc"></td>
+            </tr>
+            <tr class="lda">
+                <td>LDA</td>
+                <td id="lda-model-time"></td>
+                <td id="lda-result-time"></td>
+                <td id="lda-acc"></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="{{ url_for('static', filename='model_stats.js') }}"></script>
+{% endblock content %}
